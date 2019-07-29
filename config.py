@@ -12,7 +12,11 @@ class Config:
     @classmethod
     def read(cls, filename):
         f = open(filename)
-        x = f.read()
+        configDictionary = json.loads(f.read())
         f.close()
-        foo = json.loads(x)
-        return Config(foo.get('ssid'), foo.get('password'))
+        return Config(configDictionary.get('ssid'), configDictionary.get('password'))
+
+    def write(self, filename):
+        f = open(filename, "w")
+        f.write(self.asJson())
+        f.close()
