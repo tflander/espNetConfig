@@ -35,6 +35,7 @@ class BuiltInLedNetworkStatusNotifier(NetworkStatusNotifier):
         self.led = machine.Pin(2, machine.Pin.OUT)
         self.led.off()
         self.ledTimer = machine.Timer(0)
+        self.setDisconnected()
 
     def setConnecting(self):
         super(BuiltInLedNetworkStatusNotifier, self).setConnecting()
