@@ -19,3 +19,7 @@ def test_canSetStatusAsFailed():
     notifier.setFailed()
     assert notifier.status == networkStatusNotifier.ConnectStatus.FAILED
 
+def test_canSetStatusAsDisconnected():
+    notifier = networkStatusNotifier.NetworkStatusNotifier()
+    notifier.setDisconnected()
+    assert notifier.status == networkStatusNotifier.ConnectStatus.DISCONNECTED
