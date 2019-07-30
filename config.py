@@ -5,7 +5,7 @@ class Config:
     def __init__(self, ssid, password):
         self.ssid = ssid
         self.password = password
-        self.valid = True
+        self.exists = True
 
     def asJson(self):
         return json.dumps({"ssid": self.ssid, "password": self.password})
@@ -16,7 +16,7 @@ class Config:
             f = open(filename)
         except OSError:
             c = Config('', '')
-            c.valid = False
+            c.exists = False
             return c
         configDictionary = json.loads(f.read())
         f.close()

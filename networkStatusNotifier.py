@@ -49,7 +49,7 @@ class BuiltInLedNetworkStatusNotifier(NetworkStatusNotifier):
 
     def setFailed(self):
         super(BuiltInLedNetworkStatusNotifier, self).setFailed()
-        self.ledTimer.init(period=200, callback=self.toggleLedCallback)
+        self.ledTimer.init(period=100, callback=self.toggleLedCallback)
 
     def setDisconnected(self):
         super(BuiltInLedNetworkStatusNotifier, self).setDisconnected()

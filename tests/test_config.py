@@ -18,7 +18,7 @@ def test_writeFile(tmpdir):
     fileName = tmpdir / "newConfig.json"
     newConfig = Config(ssid="foo", password="bar")
     newConfig.write(fileName)
-    assert newConfig.valid
+    assert newConfig.exists
 
     configFromFile = Config.read(fileName)
     assert configFromFile.ssid == "foo"
