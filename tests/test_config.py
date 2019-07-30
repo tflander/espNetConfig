@@ -2,17 +2,23 @@ from config import Config
 
 
 def test_readFile(tmpdir):
-
     fileName = tmpdir / "existingConfig.json"
     createConfigFile(fileName, ssid="foo", password="bar")
     c = Config.read(fileName)
     assert c.ssid == "foo"
     assert c.password == "bar"
+    assert c.valid
+
+def test_readMissingFile(tmpdir):
+    fileName = tmpdir / "missingConfig.json"
+    c = Config.read(fileName)
+    assert not c.valid
 
 def test_writeFile(tmpdir):
     fileName = tmpdir / "newConfig.json"
     newConfig = Config(ssid="foo", password="bar")
     newConfig.write(fileName)
+    assert newConfig.valid
 
     configFromFile = Config.read(fileName)
     assert configFromFile.ssid == "foo"

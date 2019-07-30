@@ -18,8 +18,8 @@ class NetConfig:
 
     def createAccessPoint(self):
         ap_if = network.WLAN(network.AP_IF)
-        ap_if.config(essid=self.ssid)
         ap_if.active(True)
+        ap_if.config(essid=self.ssid) # fails if we tried to go to st mode..
         addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
         return addr, ap_if.ifconfig()
 
