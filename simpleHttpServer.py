@@ -2,9 +2,10 @@ import json
 
 class SimpleHttpServer:
 
-    def __init__(self, fGetWebResponseHtml, serverSocket):
-        self.fGetWebResponseHtml = fGetWebResponseHtml
+    def __init__(self, webResponseCallback, requestHandlerCallback, serverSocket):
+        self.webResponseCallback = webResponseCallback
         self.serverSocket = serverSocket
+        self.requestHandlerCallback = requestHandlerCallback
 
     def readRequestHeader(self, clientSocket):
         cl_file = clientSocket.makefile('rwb', 0)  # TODO: does the buffer really need to be writable?
@@ -20,15 +21,6 @@ class SimpleHttpServer:
     def respondtoClient(self):
         clientSocket, addr = self.serverSocket.accept()
         request = self.readRequestHeader(clientSocket)
-        url = request[0].split(' ')[1]
-        if(url.count('ssid=')):
-            params = url.split('&')
-            ssid = params[0].split('=')[1]
-            password = params[1].split('=')[1]
-            config = {"ssid": ssid, "password": password}
-            print(json.dumps(config))
-            f = open("config.json", 'w')
-            f.write(json.dumps(config))
-            f.close()
-        clientSocket.send(self.fGetWebResponseHtml())
+        self.requestHandlerCallback(request)
+        clientSocket.send(self.webResponseCallback())
         clientSocket.close()

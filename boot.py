@@ -1,4 +1,5 @@
 import machine, network, time, socket, json
+import networkStatusNotifier
 
 def wifiConnect(ssid, password):
     onboardLed = machine.Pin(2, machine.Pin.OUT)
@@ -15,6 +16,8 @@ def wifiConnect(ssid, password):
 def waitForNetwork(sta_if):
     while not sta_if.isconnected():
         time.sleep_ms(200)
+
+netNotifier = networkStatusNotifier.BuiltInLedNetworkStatusNotifier()
 
 import netConfig
 def foo():

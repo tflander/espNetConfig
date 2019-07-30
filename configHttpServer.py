@@ -1,9 +1,27 @@
-import simpleHttpServer
+import simpleHttpServer, json
+try:
+    import machine
+except:
+    import esp32_machine_emulator.machine as machine
 
 class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
     def __init__(self, serverSocket):
-        super(ConfigHttpServer, self).__init__(self.configWebPage, serverSocket)
+        super(ConfigHttpServer, self).__init__(self.configWebPage, self.requestCallBack, serverSocket)
+
+    def requestCallBack(self, request):
+        print(request)
+        url = request[0].split(' ')[1]
+        if(url.count('ssid=')):
+            params = url.split('&')
+            ssid = params[0].split('=')[1]
+            password = params[1].split('=')[1]
+            config = {"ssid": ssid, "password": password}
+            print(json.dumps(config))
+            f = open("config.json", 'w')
+            f.write(json.dumps(config))
+            f.close()
+            machine.reset()
 
     def configWebPage(self):
         return """
