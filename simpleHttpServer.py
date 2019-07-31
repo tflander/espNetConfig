@@ -21,6 +21,6 @@ class SimpleHttpServer:
     def respondtoClient(self):
         clientSocket, addr = self.serverSocket.accept()
         request = self.readRequestHeader(clientSocket)
-        self.requestHandlerCallback(request)
+        self.requestHandlerCallback(request, clientSocket)
         clientSocket.send(self.webResponseCallback())
         clientSocket.close()

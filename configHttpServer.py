@@ -4,6 +4,7 @@ try:
 except:
     import esp32_machine_emulator.machine as machine
 
+import time
 _hextobyte_cache = None
 
 def unquote(string):
@@ -16,6 +17,7 @@ def unquote(string):
         return b''
 
     if isinstance(string, str):
+        string = string.replace('+', ' ')
         string = string.encode('utf-8')
 
     bits = string.split(b'%')
@@ -49,7 +51,7 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
     def __init__(self, serverSocket):
         super(ConfigHttpServer, self).__init__(self.configWebPage, self.requestCallBack, serverSocket)
 
-    def requestCallBack(self, request):
+    def requestCallBack(self, request, clientSocket):
         if len(request) == 0:
             return
 
@@ -64,6 +66,8 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
             f = open("config.json", 'w')
             f.write(json.dumps(config))
             f.close()
+            clientSocket.send("rebooting to connect to " + ssid)
+            clientSocket.close()
             machine.reset()
 
     def configWebPage(self):

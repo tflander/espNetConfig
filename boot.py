@@ -1,4 +1,4 @@
-import machine, network, time, socket, json, gc
+import network, time, socket, gc
 import networkStatusNotifier
 
 def wifiConnect(ssid, password, netNotifier):
@@ -6,11 +6,10 @@ def wifiConnect(ssid, password, netNotifier):
     sta_if.active(True)
     sta_if.connect(ssid, password)
     netNotifier.setConnecting()
-    if not waitForNetwork(sta_if, retriesForTimeout=40):
+    if not waitForNetwork(sta_if, retriesForTimeout=80):
         netNotifier.setFailed()
         print("giving up on network " + ssid)
-        # sta_if.disconnect()
-        sta_if.active(False) ## prevents background connection errors, but can't create AP: RuntimeError: Wifi Unknown Error 0x0005
+        sta_if.active(False)
         return None, None
     netNotifier.setConnected()
 
@@ -33,7 +32,7 @@ def startApConfigServer():
     configServer.start()
 
 import config, netConfig
-def foo():
+def connectNetworkOrGoIntoConfigMode():
     netNotifier = networkStatusNotifier.BuiltInLedNetworkStatusNotifier()
 
     existingConfig = config.Config.read('config.json')
@@ -46,3 +45,5 @@ def foo():
             startApConfigServer()
     else:
         startApConfigServer()
+
+connectNetworkOrGoIntoConfigMode()

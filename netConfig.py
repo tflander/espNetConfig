@@ -25,6 +25,6 @@ class NetConfig:
 
     def bindHttpLocalHost(self, numberOfListeners):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(('', 80))
+        s.bind(('', 80)) # TODO: retry logic?...OSError:112
         s.listen(numberOfListeners)
         return s
