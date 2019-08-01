@@ -66,8 +66,9 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
             f = open("config.json", 'w')
             f.write(json.dumps(config))
             f.close()
-            clientSocket.send("rebooting to connect to " + ssid)
+            clientSocket.send("rebooting to connect to " + unquote(ssid))
             clientSocket.close()
+            time.sleep(2)
             machine.reset()
 
     def configWebPage(self):
