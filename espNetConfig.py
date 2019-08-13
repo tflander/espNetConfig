@@ -32,7 +32,7 @@ def startApConfigServer():
     configServer.start()
 
 import config, netConfig
-def connectNetworkOrGoIntoConfigMode():
+def connect_network_or_go_into_config_mode():
     netNotifier = networkStatusNotifier.BuiltInLedNetworkStatusNotifier()
 
     existingConfig = config.Config.read('config.json')
@@ -45,5 +45,3 @@ def connectNetworkOrGoIntoConfigMode():
             startApConfigServer()
     else:
         startApConfigServer()
-
-connectNetworkOrGoIntoConfigMode()
