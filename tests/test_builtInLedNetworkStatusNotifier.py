@@ -1,4 +1,4 @@
-import esp32_machine_emulator.machine as machine
+import machine
 import networkStatusNotifier
 
 ## TEMP FOR NOW -- monkeypatch timer
