@@ -25,14 +25,14 @@ def waitForNetwork(sta_if, retriesForTimeout):
             return False
     return True
 
-def startApConfigServer():
+def startApConfigServer(ssid):
     gc.collect()
     print('connect to http://192.168.4.1 to configure')
-    configServer = netConfig.NetConfig("tfDemo")
+    configServer = netConfig.NetConfig(ssid)
     configServer.start()
 
 import config, netConfig
-def connect_network_or_go_into_config_mode():
+def connect_network_or_go_into_config_mode(ssid_for_ap_connection):
     netNotifier = networkStatusNotifier.BuiltInLedNetworkStatusNotifier()
 
     existingConfig = config.Config.read('config.json')
@@ -42,6 +42,6 @@ def connect_network_or_go_into_config_mode():
         print(addr)
         if not addr:
             print('connect failed')
-            startApConfigServer()
+            startApConfigServer(ssid_for_ap_connection)
     else:
-        startApConfigServer()
+        startApConfigServer(ssid_for_ap_connection)
