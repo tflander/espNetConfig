@@ -1,5 +1,21 @@
 import network, time, socket, gc
 import networkStatusNotifier
+import config, netConfig
+
+
+def connect_network_or_go_into_config_mode(ssid_for_ap_connection):
+    netNotifier = networkStatusNotifier.BuiltInLedNetworkStatusNotifier()
+
+    existingConfig = config.Config.read('config.json')
+    if existingConfig.exists:
+        print('connecting to ' + existingConfig.ssid + '...')
+        addr, ifConfig = wifiConnect(existingConfig.ssid, existingConfig.password, netNotifier)
+        print(addr)
+        if not addr:
+            print('connect failed')
+            startApConfigServer(ssid_for_ap_connection)
+    else:
+        startApConfigServer(ssid_for_ap_connection)
 
 def wifiConnect(ssid, password, netNotifier):
     sta_if = network.WLAN(network.STA_IF)
@@ -28,20 +44,5 @@ def waitForNetwork(sta_if, retriesForTimeout):
 def startApConfigServer(ssid):
     gc.collect()
     print('connect to http://192.168.4.1 to configure')
-    configServer = netConfig.NetConfig(ssid)
+    configServer = netConfig.NetConfig(ssid) # TODO: permission error binding port from test
     configServer.start()
-
-import config, netConfig
-def connect_network_or_go_into_config_mode(ssid_for_ap_connection):
-    netNotifier = networkStatusNotifier.BuiltInLedNetworkStatusNotifier()
-
-    existingConfig = config.Config.read('config.json')
-    if existingConfig.exists:
-        print('connecting to ' + existingConfig.ssid + '...')
-        addr, ifConfig = wifiConnect(existingConfig.ssid, existingConfig.password, netNotifier)
-        print(addr)
-        if not addr:
-            print('connect failed')
-            startApConfigServer(ssid_for_ap_connection)
-    else:
-        startApConfigServer(ssid_for_ap_connection)
