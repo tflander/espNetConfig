@@ -28,15 +28,15 @@ def get_net_notifier(network_config_notifier):
     return net_notifier
 
 
-def wifi_connect(ssid, password, net_notifier):
+def wifi_connect(remote_sid, password, net_notifier):
 
     sta_if = network.WLAN(network.STA_IF)
     sta_if.active(True)
-    sta_if.connect(ssid, password)
+    sta_if.connect(remote_sid, password)
     net_notifier.setConnecting()
-    if not wait_for_network(sta_if, retriesForTimeout=80):
+    if not wait_for_network(sta_if, retries_for_timeout=80):
         net_notifier.setFailed()
-        print("giving up on network " + ssid)
+        print("giving up on network " + remote_sid)
         sta_if.active(False)
         return None, None
     net_notifier.setConnected()
@@ -45,12 +45,12 @@ def wifi_connect(ssid, password, net_notifier):
     return addr, sta_if.ifconfig()
 
 
-def wait_for_network(sta_if, retriesForTimeout):
+def wait_for_network(sta_if, retries_for_timeout):
     count = 0
     while not sta_if.isconnected():
         time.sleep_ms(200)
         count += 1
-        if count > retriesForTimeout:
+        if count > retries_for_timeout:
             return False
     return True
 

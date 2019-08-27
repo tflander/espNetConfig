@@ -10,7 +10,7 @@ def read(file_relative):
 setup(
   name = 'esp32_net_config',
   packages = [''],
-  version = '0.1.5',
+  version = '0.1.6',
   license='MIT',
   description = 'module to allow configuration of netword ssid and password through local access point',
   long_description = read('README.rst'),

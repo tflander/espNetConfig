@@ -48,20 +48,20 @@ def unquote(string):
 class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
     def __init__(self, server_socket):
-        super(ConfigHttpServer, self).__init__(self.config_web_page, self.request_call_back, server_socket)
+        super(ConfigHttpServer, self).__init__(self.config_web_page, self.handle_client_request, server_socket)
 
-    def request_call_back(self, request, client_socket):
+    def handle_client_request(self, request, client_socket):
         if len(request) == 0:
             return
 
-        print("request = ", request)
+        # print("request = ", request)
         url = request[0].split(' ')[1]
         if url.count('ssid='):
             params = url.split('&')
             station_id = params[0].split('=')[1]
             password = params[1].split('=')[1]
-            config = {"ssid": unquote(station_id), "password": unquote(password)}
-            print(json.dumps(config))
+            config = {"ssid": unquote(station_id).decode("utf-8"), "password": unquote(password).decode("utf-8")}
+            # print(json.dumps(config))
             self.write_config(config)
             self.reboot_device(client_socket, station_id)
 
@@ -77,7 +77,7 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
         f.close()
 
     def rebooting_web_page(self, station_id):
-        return "rebooting to connect to " + unquote(station_id)
+        return "rebooting to connect to " + unquote(station_id).decode("utf-8")
 
     def config_web_page(self):
         return """
