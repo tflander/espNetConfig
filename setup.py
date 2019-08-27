@@ -1,14 +1,16 @@
 from distutils.core import setup
 
+
 def read(file_relative):
     file = file_relative
     with open(str(file)) as f:
         return f.read()
 
+
 setup(
   name = 'esp32_net_config',
   packages = [''],
-  version = '0.1.4',
+  version = '0.1.5',
   license='MIT',
   description = 'module to allow configuration of netword ssid and password through local access point',
   long_description = read('README.rst'),

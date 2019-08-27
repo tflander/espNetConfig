@@ -1,15 +1,13 @@
 import simpleHttpServer, json
-try:
-    import machine
-except:
-    import esp32_machine_emulator.machine as machine
+import machine
 
 import time
-_hextobyte_cache = None
+_hex_byte_cache = None
+
 
 def unquote(string):
     """unquote('abc%20def') -> b'abc def'."""
-    global _hextobyte_cache
+    global _hex_byte_cache
 
     # Note: strings are encoded as UTF-8. This is only an issue if it contains
     # unescaped non-ASCII characters, which URIs should not.
@@ -29,15 +27,15 @@ def unquote(string):
 
     # Build cache for hex to char mapping on-the-fly only for codes
     # that are actually used
-    if _hextobyte_cache is None:
-        _hextobyte_cache = {}
+    if _hex_byte_cache is None:
+        _hex_byte_cache = {}
 
     for item in bits[1:]:
         try:
             code = item[:2]
-            char = _hextobyte_cache.get(code)
+            char = _hex_byte_cache.get(code)
             if char is None:
-                char = _hextobyte_cache[code] = bytes([int(code, 16)])
+                char = _hex_byte_cache[code] = bytes([int(code, 16)])
             append(char)
             append(item[2:])
         except KeyError:
@@ -46,33 +44,42 @@ def unquote(string):
 
     return b''.join(res)
 
+
 class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
-    def __init__(self, serverSocket):
-        super(ConfigHttpServer, self).__init__(self.configWebPage, self.requestCallBack, serverSocket)
+    def __init__(self, server_socket):
+        super(ConfigHttpServer, self).__init__(self.config_web_page, self.request_call_back, server_socket)
 
-    def requestCallBack(self, request, clientSocket):
+    def request_call_back(self, request, client_socket):
         if len(request) == 0:
             return
 
         print("request = ", request)
         url = request[0].split(' ')[1]
-        if(url.count('ssid=')):
+        if url.count('ssid='):
             params = url.split('&')
-            ssid = params[0].split('=')[1]
+            station_id = params[0].split('=')[1]
             password = params[1].split('=')[1]
-            config = {"ssid": unquote(ssid), "password": unquote(password)}
+            config = {"ssid": unquote(station_id), "password": unquote(password)}
             print(json.dumps(config))
-            f = open("config.json", 'w')
-            f.write(json.dumps(config))
-            f.close()
-            clientSocket.send("rebooting to connect to ")
-            clientSocket.send(unquote(ssid))
-            clientSocket.close()
-            time.sleep(2)
-            machine.reset()
+            self.write_config(config)
+            self.reboot_device(client_socket, station_id)
 
-    def configWebPage(self):
+    def reboot_device(self, client_socket, station_id):
+        client_socket.send(self.rebooting_web_page(station_id))
+        client_socket.close()
+        time.sleep(2)
+        machine.reset()
+
+    def write_config(self, config):
+        f = open("config.json", 'w')
+        f.write(json.dumps(config))
+        f.close()
+
+    def rebooting_web_page(self, station_id):
+        return "rebooting to connect to " + unquote(station_id)
+
+    def config_web_page(self):
         return """
     <!DOCTYPE html>
     <html>
