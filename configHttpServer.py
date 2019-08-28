@@ -45,16 +45,42 @@ def unquote(string):
     return b''.join(res)
 
 
+def default_config_web_page():
+    return """
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Configure Network</h2>
+<p>enter your network ssid and password</p>
+
+<form action="">
+ssid:<br>
+<input type="text" name="ssid">
+<br>
+password:<br>
+<input type="text" name="password">
+<br><br>
+<input type="submit">
+</form>
+
+</body>
+</html>
+    """
+
+
 class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
-    def __init__(self, server_socket):
-        super(ConfigHttpServer, self).__init__(self.config_web_page, self.handle_client_request, server_socket)
+    def __init__(self, server_socket, config_web_page=None):
+        if not config_web_page:
+            config_web_page = default_config_web_page
+        super(ConfigHttpServer, self).__init__(config_web_page, self.handle_client_request, server_socket)
 
     def handle_client_request(self, request, client_socket):
         if len(request) == 0:
             return
 
-        # print("request = ", request)
+        print("request = ", request)
         url = request[0].split(' ')[1]
         if url.count('ssid='):
             params = url.split('&')
@@ -71,33 +97,11 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
         time.sleep(2)
         machine.reset()
 
-    def write_config(self, config):
+    @staticmethod
+    def write_config(config):
         f = open("config.json", 'w')
         f.write(json.dumps(config))
         f.close()
 
     def rebooting_web_page(self, station_id):
         return "rebooting to connect to " + unquote(station_id).decode("utf-8")
-
-    def config_web_page(self):
-        return """
-    <!DOCTYPE html>
-    <html>
-    <body>
-
-    <h2>Configure Network</h2>
-    <p>enter your network ssid and password</p>
-
-    <form action="">
-    ssid:<br>
-    <input type="text" name="ssid">
-    <br>
-    password:<br>
-    <input type="text" name="password">
-    <br><br>
-    <input type="submit">
-    </form>
-
-    </body>
-    </html>
-        """
