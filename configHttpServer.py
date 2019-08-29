@@ -70,12 +70,10 @@ password:<br>
 
 class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
-    def __init__(self, server_socket, config_web_page=None):
-        if not config_web_page:
-            config_web_page = default_config_web_page
-        super(ConfigHttpServer, self).__init__(config_web_page, self.handle_client_request, server_socket)
+    def __init__(self, server_socket):
+        super(ConfigHttpServer, self).__init__(self.handle_client_request, server_socket)
 
-    def handle_client_request(self, req):
+    def handle_client_request(self, req, resp):
 
         if req.params.get('ssid'):
             station_id = req.params.get('ssid')
@@ -83,12 +81,14 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
             config = {"ssid": unquote(station_id).decode("utf-8"), "password": unquote(password).decode("utf-8")}
             # print(json.dumps(config))
             self.write_config(config)
+            resp.send(self.rebooting_web_page(station_id))
             self.reboot_device(req, station_id)
+        else:
+            resp.send(default_config_web_page())
+        resp.close()
 
     def reboot_device(self, req, station_id):
-        client_socket = req.client_socket
-        client_socket.send(self.rebooting_web_page(station_id))
-        client_socket.close()
+
         time.sleep(2)
         machine.reset()
 

@@ -31,3 +31,14 @@ class HttpRequest():
             split = param_pair.split('=')
             self.params.__setitem__(split[0], split[1])
 
+
+class HttpResponse():
+
+    def __init__(self, client_socket):
+        self.client_socket = client_socket
+
+    def send(self, content):
+        self.client_socket.send(content)
+
+    def close(self):
+        self.client_socket.close()

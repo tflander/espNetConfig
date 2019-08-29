@@ -11,10 +11,10 @@ class FakeClientSocket():
         pass
 
     def makefile(self, unused1, unused2):
-        return FakeRequestSocket(self.request)
+        return FakeRequestHeaderSocket(self.request)
 
 
-class FakeRequestSocket:
+class FakeRequestHeaderSocket:
 
     def __init__(self, request):
         self.request = request

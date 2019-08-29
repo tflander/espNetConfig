@@ -8,10 +8,11 @@ import http
 
 class TestRespondToClient:
 
-    request = ['GET /?ssid=foo&password=bar HTTP/1.1\r\n']
+    form_submitted_request = ['GET /?ssid=foo&password=bar HTTP/1.1\r\n']
+    form_display_request = ['GET / HTTP/1.1\r\n']
 
     def test_writes_config_file(self):
-        config_server = self.create_config_server(self.request)
+        config_server = self.create_config_server(self.form_submitted_request)
         config_server.respondtoClient()
 
         assert os.path.exists("config.json")
@@ -26,14 +27,19 @@ class TestRespondToClient:
         assert not os.path.exists("config.json")
 
     def test_reboots_device(self):
-        config_server = self.create_config_server(self.request)
+        config_server = self.create_config_server(self.form_submitted_request)
         config_server.respondtoClient()
         assert machine.reset_called_for_testing
         os.remove("config.json")
 
-    @unittest.skip("dodgy coding exposed.  Writes web page after calling reboot.  Need a better way")
+    def test_sends_config_form_to_client(self):
+        config_server = self.create_config_server(self.form_display_request)
+        config_server.respondtoClient()
+        socket = config_server.serverSocket.client_socket
+        assert socket.web_page.__contains__("<h2>Configure Network</h2>")
+
     def test_sends_reboot_message_to_client(self):
-        config_server = self.create_config_server(self.request)
+        config_server = self.create_config_server(self.form_submitted_request)
         config_server.respondtoClient()
         socket = config_server.serverSocket.client_socket
         assert socket.web_page == "rebooting to connect to foo"
@@ -54,7 +60,8 @@ class TestHandleClientRequest:
     def test_sends_reboot_message_to_client(self):
         socket = tests.fakes.FakeClientSocket(self.request)
         req = http.HttpRequest(socket)
-        self.configServer.handle_client_request(req)
+        resp = http.HttpResponse(socket)
+        self.configServer.handle_client_request(req, resp)
         assert socket.web_page == "rebooting to connect to foo"
         os.remove("config.json")
 
