@@ -1,6 +1,7 @@
 class HttpRequest():
 
     def __init__(self, client_socket):
+        self.client_socket = client_socket
         cl_file = client_socket.makefile('rwb', 0)  # TODO: does the buffer really need to be writable?
         self.raw_request_headers = self.get_raw_request_headers(cl_file)
         self.params = {}
