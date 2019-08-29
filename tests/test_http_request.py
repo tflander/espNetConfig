@@ -1,4 +1,4 @@
-import http_request
+import http
 import tests.fakes
 
 
@@ -19,5 +19,5 @@ def test_parameters_parsed():
 
 def create_request(request):
     client_socket = tests.fakes.FakeClientSocket(request)
-    req = http_request.HttpRequest(client_socket)
+    req = http.HttpRequest(client_socket)
     return req

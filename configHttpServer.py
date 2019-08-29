@@ -1,6 +1,5 @@
 import simpleHttpServer, json
 import machine
-import http_request
 import time
 _hex_byte_cache = None
 
@@ -84,9 +83,10 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
             config = {"ssid": unquote(station_id).decode("utf-8"), "password": unquote(password).decode("utf-8")}
             # print(json.dumps(config))
             self.write_config(config)
-            self.reboot_device(req.client_socket, station_id)
+            self.reboot_device(req, station_id)
 
-    def reboot_device(self, client_socket, station_id):
+    def reboot_device(self, req, station_id):
+        client_socket = req.client_socket
         client_socket.send(self.rebooting_web_page(station_id))
         client_socket.close()
         time.sleep(2)

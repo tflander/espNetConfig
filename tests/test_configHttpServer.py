@@ -3,7 +3,7 @@ import os.path
 import machine
 import unittest
 import tests.fakes
-import http_request
+import http
 
 
 class TestRespondToClient:
@@ -53,7 +53,7 @@ class TestHandleClientRequest:
 
     def test_sends_reboot_message_to_client(self):
         socket = tests.fakes.FakeClientSocket(self.request)
-        req = http_request.HttpRequest(socket)
+        req = http.HttpRequest(socket)
         self.configServer.handle_client_request(req)
         assert socket.web_page == "rebooting to connect to foo"
         os.remove("config.json")

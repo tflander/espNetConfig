@@ -1,4 +1,4 @@
-import http_request
+import http
 
 
 class SimpleHttpServer:
@@ -11,8 +11,7 @@ class SimpleHttpServer:
     # TODO: wrap server socket in response object?
     def respondtoClient(self):
         clientSocket, addr = self.serverSocket.accept()
-        # request = self.readRequestHeader(clientSocket)
-        req = http_request.HttpRequest(clientSocket)
+        req = http.HttpRequest(clientSocket)
         self.requestHandlerCallback(req)
-        clientSocket.send(self.webResponseCallback())
+        clientSocket.send(self.webResponseCallback()) # TODO: don't want to display default page if we've responded
         clientSocket.close()
