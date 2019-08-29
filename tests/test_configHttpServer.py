@@ -8,7 +8,7 @@ import http
 
 class TestRespondToClient:
 
-    form_submitted_request = ['GET /?ssid=foo&password=bar HTTP/1.1\r\n']
+    form_submitted_request = ['GET /?ssid=foo+bar&password=bar HTTP/1.1\r\n']
     form_display_request = ['GET / HTTP/1.1\r\n']
 
     def test_writes_config_file(self):
@@ -17,7 +17,7 @@ class TestRespondToClient:
 
         assert os.path.exists("config.json")
         f=open("config.json")
-        assert f.read() == '{"ssid": "foo", "password": "bar"}'
+        assert f.read() == '{"ssid": "foo bar", "password": "bar"}'
         os.remove("config.json")
 
     def test_exits_if_empty_request(self):
@@ -42,7 +42,7 @@ class TestRespondToClient:
         config_server = self.create_config_server(self.form_submitted_request)
         config_server.respondtoClient()
         socket = config_server.serverSocket.client_socket
-        assert socket.web_page == "rebooting to connect to foo"
+        assert socket.web_page == "rebooting to connect to foo bar"
         os.remove("config.json")
 
     @staticmethod
@@ -65,20 +65,6 @@ class TestHandleClientRequest:
         assert socket.web_page == "rebooting to connect to foo"
         os.remove("config.json")
 
-
-class TestUnquote:
-
-    def test_handles_empty_string(self):
-        assert configHttpServer.unquote("").decode("utf-8") == ""
-
-    def test_handles_normal_string(self):
-        assert configHttpServer.unquote("foo bar").decode("utf-8") == "foo bar"
-
-    def test_handles_spaces(self):
-        assert configHttpServer.unquote("foo+bar+baz").decode("utf-8") == "foo bar baz"
-
-    def test_handles_url_encoding(self):
-        assert configHttpServer.unquote("%23123").decode("utf-8") == "#123"
 
 class FakeServerSocket:
 

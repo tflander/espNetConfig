@@ -1,3 +1,6 @@
+_hex_byte_cache = None
+
+
 class HttpRequest():
 
     def __init__(self, client_socket):
@@ -29,7 +32,7 @@ class HttpRequest():
 
         for param_pair in param_pairs:
             split = param_pair.split('=')
-            self.params.__setitem__(split[0], split[1])
+            self.params.__setitem__(unquote(split[0]).decode('utf-8'), unquote(split[1]).decode('utf-8'))
 
 
 class HttpResponse():
@@ -40,3 +43,44 @@ class HttpResponse():
     def send(self, content):
         self.client_socket.send(content)
         self.client_socket.close()
+
+
+def unquote(string):
+    """unquote('abc%20def') -> b'abc def'."""
+    global _hex_byte_cache
+
+    # Note: strings are encoded as UTF-8. This is only an issue if it contains
+    # unescaped non-ASCII characters, which URIs should not.
+    if not string:
+        return b''
+
+    if isinstance(string, str):
+        string = string.replace('+', ' ')
+        string = string.encode('utf-8')
+
+    bits = string.split(b'%')
+    if len(bits) == 1:
+        return string
+
+    res = [bits[0]]
+    append = res.append
+
+    # Build cache for hex to char mapping on-the-fly only for codes
+    # that are actually used
+    if _hex_byte_cache is None:
+        _hex_byte_cache = {}
+
+    for item in bits[1:]:
+        try:
+            code = item[:2]
+            char = _hex_byte_cache.get(code)
+            if char is None:
+                char = _hex_byte_cache[code] = bytes([int(code, 16)])
+            append(char)
+            append(item[2:])
+        except KeyError:
+            append(b'%')
+            append(item)
+
+    return b''.join(res)
+

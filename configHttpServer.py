@@ -1,47 +1,6 @@
 import simpleHttpServer, json
 import machine
 import time
-_hex_byte_cache = None
-
-
-def unquote(string):
-    """unquote('abc%20def') -> b'abc def'."""
-    global _hex_byte_cache
-
-    # Note: strings are encoded as UTF-8. This is only an issue if it contains
-    # unescaped non-ASCII characters, which URIs should not.
-    if not string:
-        return b''
-
-    if isinstance(string, str):
-        string = string.replace('+', ' ')
-        string = string.encode('utf-8')
-
-    bits = string.split(b'%')
-    if len(bits) == 1:
-        return string
-
-    res = [bits[0]]
-    append = res.append
-
-    # Build cache for hex to char mapping on-the-fly only for codes
-    # that are actually used
-    if _hex_byte_cache is None:
-        _hex_byte_cache = {}
-
-    for item in bits[1:]:
-        try:
-            code = item[:2]
-            char = _hex_byte_cache.get(code)
-            if char is None:
-                char = _hex_byte_cache[code] = bytes([int(code, 16)])
-            append(char)
-            append(item[2:])
-        except KeyError:
-            append(b'%')
-            append(item)
-
-    return b''.join(res)
 
 
 def default_config_web_page():
@@ -78,15 +37,15 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
         if req.params.get('ssid'):
             station_id = req.params.get('ssid')
             password = req.params.get('password')
-            config = {"ssid": unquote(station_id).decode("utf-8"), "password": unquote(password).decode("utf-8")}
+            config = {"ssid": station_id, "password": password}
             self.write_config(config)
             resp.send(self.rebooting_web_page(station_id))
             self.reboot_device()
         else:
             resp.send(default_config_web_page())
 
-    def reboot_device(self):
-
+    @staticmethod
+    def reboot_device():
         time.sleep(2)
         machine.reset()
 
@@ -98,4 +57,4 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
     @staticmethod
     def rebooting_web_page(station_id):
-        return "rebooting to connect to " + unquote(station_id).decode("utf-8")
+        return "rebooting to connect to " + station_id
