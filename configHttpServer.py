@@ -79,15 +79,13 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
             station_id = req.params.get('ssid')
             password = req.params.get('password')
             config = {"ssid": unquote(station_id).decode("utf-8"), "password": unquote(password).decode("utf-8")}
-            # print(json.dumps(config))
             self.write_config(config)
             resp.send(self.rebooting_web_page(station_id))
-            self.reboot_device(req, station_id)
+            self.reboot_device()
         else:
             resp.send(default_config_web_page())
-        resp.close()
 
-    def reboot_device(self, req, station_id):
+    def reboot_device(self):
 
         time.sleep(2)
         machine.reset()

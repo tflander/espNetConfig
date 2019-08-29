@@ -39,6 +39,4 @@ class HttpResponse():
 
     def send(self, content):
         self.client_socket.send(content)
-
-    def close(self):
         self.client_socket.close()
