@@ -1,7 +1,6 @@
 import configHttpServer
 import os.path
 import machine
-import unittest
 import tests.fakes
 import http
 
@@ -48,25 +47,11 @@ class TestRespondToClient:
     @staticmethod
     def create_config_server(request):
         client_socket = tests.fakes.FakeClientSocket(request)
-        server_socket = FakeServerSocket(client_socket)
-        return configHttpServer.ConfigHttpServer(server_socket)
+        listener_socket = FakeListenerSocket(client_socket)
+        return configHttpServer.ConfigHttpServer(listener_socket)
 
 
-class TestHandleClientRequest:
-
-    request = ['GET /?ssid=foo&password=bar HTTP/1.1\r\n']
-    configServer = configHttpServer.ConfigHttpServer("fake server socket")
-
-    def test_sends_reboot_message_to_client(self):
-        socket = tests.fakes.FakeClientSocket(self.request)
-        req = http.HttpRequest(socket)
-        resp = http.HttpResponse(socket)
-        self.configServer.handle_client_request(req, resp)
-        assert socket.web_page == "rebooting to connect to foo"
-        os.remove("config.json")
-
-
-class FakeServerSocket:
+class FakeListenerSocket:
 
     def __init__(self, client_socket):
         self.client_socket = client_socket
