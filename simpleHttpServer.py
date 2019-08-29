@@ -10,7 +10,6 @@ class SimpleHttpServer:
     # TODO: wrap client socket in a request object?
     def readRequestHeader(self, clientSocket):
         cl_file = clientSocket.makefile('rwb', 0)  # TODO: does the buffer really need to be writable?
-        print('TEMP DEBUG', type(cl_file))
         request = []
         while True:
             line = cl_file.readline()

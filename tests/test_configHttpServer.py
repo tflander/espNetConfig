@@ -2,6 +2,8 @@ import configHttpServer
 import os.path
 import machine
 import unittest
+import tests.fakes
+
 
 class TestRespondToClient:
 
@@ -38,7 +40,7 @@ class TestRespondToClient:
 
     @staticmethod
     def create_config_server(request):
-        client_socket = FakeClientSocket(request)
+        client_socket = tests.fakes.FakeClientSocket(request)
         server_socket = FakeServerSocket(client_socket)
         return configHttpServer.ConfigHttpServer(server_socket)
 
@@ -48,9 +50,8 @@ class TestHandleClientRequest:
     request = ['GET /?ssid=foo&password=bar HTTP/1.1\r\n']
     configServer = configHttpServer.ConfigHttpServer("fake server socket")
 
-
     def test_sends_reboot_message_to_client(self):
-        socket = FakeClientSocket(self.request)
+        socket = tests.fakes.FakeClientSocket(self.request)
         self.configServer.handle_client_request(self.request, socket)
         assert socket.web_page == "rebooting to connect to foo"
         os.remove("config.json")
@@ -69,37 +70,6 @@ class TestUnquote:
 
     def test_handles_url_encoding(self):
         assert configHttpServer.unquote("%23123").decode("utf-8") == "#123"
-
-
-class FakeClientSocket():
-
-    def __init__(self, request):
-        self.request = request
-        self.web_page = None
-
-    def send(self, web_page):
-        self.web_page = web_page
-
-    def close(self):
-        pass
-
-    def makefile(self, unused1, unused2):
-        return FakeRequest(self.request)
-
-
-class FakeRequest:
-
-    def __init__(self, request):
-        self.request = request
-        self.index = 0
-
-    def readline(self):
-        if self.index == len(self.request):
-            return b'\r\n'
-        request_line = self.request[self.index]
-        self.index += 1
-        return request_line.encode('utf-8')
-
 
 class FakeServerSocket:
 
