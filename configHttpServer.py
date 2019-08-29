@@ -1,6 +1,6 @@
 import simpleHttpServer, json
 import machine
-
+import http_request
 import time
 _hex_byte_cache = None
 
@@ -76,16 +76,13 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
             config_web_page = default_config_web_page
         super(ConfigHttpServer, self).__init__(config_web_page, self.handle_client_request, server_socket)
 
-    def handle_client_request(self, request, client_socket):
-        if len(request) == 0:
-            return
+    def handle_client_request(self, client_socket):
 
-        print("request = ", request)
-        url = request[0].split(' ')[1]
-        if url.count('ssid='):
-            params = url.split('&')
-            station_id = params[0].split('=')[1]
-            password = params[1].split('=')[1]
+        req = http_request.HttpRequest(client_socket)
+
+        if req.params.get('ssid'):
+            station_id = req.params.get('ssid')
+            password = req.params.get('password')
             config = {"ssid": unquote(station_id).decode("utf-8"), "password": unquote(password).decode("utf-8")}
             # print(json.dumps(config))
             self.write_config(config)
@@ -103,5 +100,6 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
         f.write(json.dumps(config))
         f.close()
 
-    def rebooting_web_page(self, station_id):
+    @staticmethod
+    def rebooting_web_page(station_id):
         return "rebooting to connect to " + unquote(station_id).decode("utf-8")

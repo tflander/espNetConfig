@@ -52,7 +52,7 @@ class TestHandleClientRequest:
 
     def test_sends_reboot_message_to_client(self):
         socket = tests.fakes.FakeClientSocket(self.request)
-        self.configServer.handle_client_request(self.request, socket)
+        self.configServer.handle_client_request(socket)
         assert socket.web_page == "rebooting to connect to foo"
         os.remove("config.json")
 
