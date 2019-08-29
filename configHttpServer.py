@@ -31,18 +31,24 @@ class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
     def __init__(self, server_socket):
         super(ConfigHttpServer, self).__init__(self.handle_client_request, server_socket)
+        self.form_submission_controller = FormSubmissionController()
 
     def handle_client_request(self, req, resp):
 
         if req.params.get('ssid'):
-            station_id = req.params.get('ssid')
-            password = req.params.get('password')
-            config = {"ssid": station_id, "password": password}
-            self.write_config(config)
-            resp.send(self.rebooting_web_page(station_id))
-            self.reboot_device()
+            self.form_submission_controller.handle_form_submission(req, resp)
         else:
             resp.send(default_config_web_page())
+
+
+class FormSubmissionController:
+    def handle_form_submission(self, req, resp):
+        station_id = req.params.get('ssid')
+        password = req.params.get('password')
+        config = {"ssid": station_id, "password": password}
+        self.write_config(config)
+        resp.send(self.rebooting_web_page(station_id))
+        self.reboot_device()
 
     @staticmethod
     def reboot_device():
