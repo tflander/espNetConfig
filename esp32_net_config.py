@@ -1,8 +1,13 @@
+import gc
+import socket
+import time
+
 import network
-import time, socket, gc
-import networkStatusNotifier
-import config, netConfigAccessPoint
+
+import config
 import httpLocalHostListener
+import netConfigAccessPoint
+import networkStatusNotifier
 
 
 def connect_network_or_go_into_config_mode(ssid_for_ap_connection, network_config_notifier=None):
@@ -29,7 +34,6 @@ def get_net_notifier(network_config_notifier):
 
 
 def wifi_connect(remote_sid, password, net_notifier):
-
     sta_if = network.WLAN(network.STA_IF)
     sta_if.active(True)
     sta_if.connect(remote_sid, password)

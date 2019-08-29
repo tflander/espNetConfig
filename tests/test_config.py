@@ -9,10 +9,12 @@ def test_readFile(tmpdir):
     assert c.password == "bar"
     assert c.exists
 
+
 def test_readMissingFile(tmpdir):
     fileName = tmpdir / "missingConfig.json"
     c = Config.read(fileName)
     assert not c.exists
+
 
 def test_writeFile(tmpdir):
     fileName = tmpdir / "newConfig.json"
@@ -23,6 +25,7 @@ def test_writeFile(tmpdir):
     configFromFile = Config.read(fileName)
     assert configFromFile.ssid == "foo"
     assert configFromFile.password == "bar"
+
 
 def createConfigFile(file, ssid, password):
     c = Config(ssid=ssid, password=password)

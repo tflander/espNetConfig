@@ -1,6 +1,9 @@
-import simpleHttpServer, json
-import machine
 import time
+
+import machine
+
+import json
+import simpleHttpServer
 
 
 class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):

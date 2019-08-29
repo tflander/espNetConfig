@@ -1,7 +1,7 @@
 _hex_byte_cache = None
 
 
-class HttpRequest():
+class HttpRequest:
 
     def __init__(self, client_socket):
         self.client_socket = client_socket
@@ -35,7 +35,7 @@ class HttpRequest():
             self.params.__setitem__(unquote(split[0]).decode('utf-8'), unquote(split[1]).decode('utf-8'))
 
 
-class HttpResponse():
+class HttpResponse:
 
     def __init__(self, client_socket):
         self.client_socket = client_socket

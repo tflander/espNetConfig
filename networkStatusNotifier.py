@@ -1,14 +1,12 @@
-try:
-    import machine
-except:
-    import esp32_machine_emulator.machine as machine
+import machine
 
 
-class ConnectStatus():
+class ConnectStatus:
     DISCONNECTED = 0
     CONNECTING = 1
     CONNECTED = 2
     FAILED = 3
+
 
 class NetworkStatusNotifier:
 
@@ -55,9 +53,9 @@ class BuiltInLedNetworkStatusNotifier(NetworkStatusNotifier):
         super(BuiltInLedNetworkStatusNotifier, self).setDisconnected()
         self.ledTimer.init(period=500, callback=self.toggleLedCallback)
 
+    # noinspection PyUnusedLocal
     def toggleLedCallback(self, timer):
-        if(self.led.value()):
+        if (self.led.value):
             self.led.off()
         else:
             self.led.on()
-

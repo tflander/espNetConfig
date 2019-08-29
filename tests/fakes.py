@@ -1,4 +1,4 @@
-class FakeClientSocket():
+class FakeClientSocket:
 
     def __init__(self, request):
         self.request = request
@@ -10,6 +10,7 @@ class FakeClientSocket():
     def close(self):
         pass
 
+    # noinspection PyUnusedLocal
     def makefile(self, unused1, unused2):
         return FakeRequestHeaderSocket(self.request)
 
