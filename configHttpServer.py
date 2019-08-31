@@ -8,8 +8,8 @@ import simpleHttpServer
 
 class ConfigHttpServer(simpleHttpServer.SimpleHttpServer):
 
-    def __init__(self, listener_socket):
-        super(ConfigHttpServer, self).__init__(self.route_client_request, listener_socket)
+    def __init__(self, max_concurrent_requests):
+        super(ConfigHttpServer, self).__init__(self.route_client_request, max_concurrent_requests)
         self.form_submission_controller = FormSubmissionController()
         self.form_display_controller = FormDisplayController()
 

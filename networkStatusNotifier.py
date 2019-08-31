@@ -55,7 +55,7 @@ class BuiltInLedNetworkStatusNotifier(NetworkStatusNotifier):
 
     # noinspection PyUnusedLocal
     def toggleLedCallback(self, timer):
-        if (self.led.value):
+        if self.led.value:
             self.led.off()
         else:
             self.led.on()

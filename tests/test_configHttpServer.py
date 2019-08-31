@@ -34,27 +34,20 @@ class TestRespondToClient:
     def test_sends_config_form_to_client(self):
         config_server = self.create_config_server(self.form_display_request)
         config_server.dispatch_client_requests()
-        socket = config_server.listener_socket.client_socket
+        socket = config_server.listener.listener_socket.client_socket
         assert socket.web_page.__contains__("<h2>Configure Network</h2>")
 
     def test_sends_reboot_message_to_client(self):
         config_server = self.create_config_server(self.form_submitted_request)
         config_server.dispatch_client_requests()
-        socket = config_server.listener_socket.client_socket
+        socket = config_server.listener.listener_socket.client_socket
         assert socket.web_page == "rebooting to connect to foo bar"
         os.remove("config.json")
 
     @staticmethod
     def create_config_server(request):
-        client_socket = tests.fakes.FakeClientSocket(request)
-        listener_socket = FakeListenerSocket(client_socket)
-        return configHttpServer.ConfigHttpServer(listener_socket)
+        config_server = configHttpServer.ConfigHttpServer(max_concurrent_requests=5)
+        server = tests.fakes.FakeHttpServer(config_server)
+        server.expect_request(request)
+        return server
 
-
-class FakeListenerSocket:
-
-    def __init__(self, client_socket):
-        self.client_socket = client_socket
-
-    def accept(self):
-        return self.client_socket, "client address"
