@@ -12,6 +12,7 @@ class NetConfigAccessPoint:
     def start(self):
         self.create_access_point()  # address is always http://192.168.4.1
         http_server = configHttpServer.ConfigHttpServer(self.max_concurrent_requests)
+        http_server.init()
 
         while True:
             http_server.dispatch_client_requests()

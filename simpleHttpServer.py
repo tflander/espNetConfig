@@ -13,7 +13,6 @@ class SimpleHttpServer:
         self.listener = self.create_listener()
 
     def dispatch_client_requests(self):
-        # TODO: loop here instead of caller, rename to start()
         client_socket, addr = self.listener.listener_socket.accept()
         req = http_support.HttpRequest(client_socket)
         resp = http_support.HttpResponse(client_socket)
