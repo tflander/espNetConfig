@@ -5,13 +5,13 @@ import configHttpServer
 
 class NetConfigAccessPoint:
 
-    def __init__(self, localSsid, max_concurrent_requests=5):
-        self.max_concurrent_requests = max_concurrent_requests
+    def __init__(self, localSsid, httpLocalHostListener):
         self.ssid = localSsid
+        self.serverSocket = httpLocalHostListener.listener_socket
 
     def start(self):
         self.create_access_point()  # address is always http://192.168.4.1
-        http_server = configHttpServer.ConfigHttpServer(self.max_concurrent_requests)
+        http_server = configHttpServer.ConfigHttpServer(self.serverSocket)
 
         while True:
             http_server.dispatch_client_requests()
