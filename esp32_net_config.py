@@ -20,10 +20,10 @@ def connect_network_or_go_into_config_mode(ssid_for_ap_connection, network_confi
         if not local_address:
             print('connect failed')
             net_notifier.setFailed()
-            start_ap_config_server(ssid_for_ap_connection)
+            start_ap_config_server(ssid_for_ap_connection, number_of_listeners=5)
     else:
         net_notifier.setDisconnected()
-        start_ap_config_server(ssid_for_ap_connection)
+        start_ap_config_server(ssid_for_ap_connection, number_of_listeners=5)
 
 
 def get_net_notifier(network_config_notifier):
@@ -59,10 +59,10 @@ def wait_for_network(sta_if, retries_for_timeout):
     return True
 
 
-def start_ap_config_server(new_ap_ssid):
+def start_ap_config_server(new_ap_ssid, number_of_listeners):
     gc.collect()
     print('connect to http://192.168.4.1 to configure')
-    http_local_host_listener = create_http_local_host_listener(number_of_listeners=5)
+    http_local_host_listener = create_http_local_host_listener(number_of_listeners)
     config_server = netConfigAccessPoint.NetConfigAccessPoint(new_ap_ssid, http_local_host_listener)
     config_server.start()
 
