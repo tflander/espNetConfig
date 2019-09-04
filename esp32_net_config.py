@@ -63,8 +63,12 @@ def start_ap_config_server(new_ap_ssid, number_of_listeners):
     gc.collect()
     print('connect to http://192.168.4.1 to configure')
     http_local_host_listener = create_http_local_host_listener(number_of_listeners)
-    config_server = netConfigAccessPoint.NetConfigAccessPoint(new_ap_ssid, http_local_host_listener)
+    config_server = create_config_server(new_ap_ssid, http_local_host_listener)
     config_server.start()
+
+
+def create_config_server(new_ap_ssid, http_local_host_listener):
+    return netConfigAccessPoint.NetConfigAccessPoint(new_ap_ssid, http_local_host_listener)
 
 
 def create_http_local_host_listener(number_of_listeners):

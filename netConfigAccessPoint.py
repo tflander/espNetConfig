@@ -11,7 +11,7 @@ class NetConfigAccessPoint:
 
     def start(self):
         self.create_access_point()  # address is always http://192.168.4.1
-        http_server = configHttpServer.ConfigHttpServer(self.serverSocket)
+        http_server = self.create_http_config_server()
 
         while True:
             http_server.dispatch_client_requests()
@@ -22,3 +22,7 @@ class NetConfigAccessPoint:
         ap_if.config(essid=self.ssid)  # fails if we tried to go to st mode..
         addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
         return addr, ap_if.ifconfig()
+
+    def create_http_config_server(self):
+        return configHttpServer.ConfigHttpServer(self.serverSocket)
+
